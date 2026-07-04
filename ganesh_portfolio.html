@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K. Ganesh — Java Full Stack Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A0F14;
+    --panel:#0F1720;
+    --panel-2:#131D28;
+    --trace:#00D9A3;
+    --trace-dim:#0A6B52;
+    --amber:#FFB454;
+    --paper:#E9EEF2;
+    --muted:#7C8A96;
+    --line:#1E2A34;
+    --radius:2px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--trace);color:var(--ink);}
+
+  a{color:inherit;text-decoration:none;}
+
+  .mono{font-family:'JetBrains Mono',monospace;}
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif;}
+
+  /* background circuit texture */
+  .circuit-bg{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:64px 64px;
+    opacity:0.35;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 75%);
+  }
+
+  .wrap{max-width:1040px;margin:0 auto;padding:0 28px;position:relative;z-index:1;}
+
+  /* NAV */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    background:rgba(10,15,20,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;}
+  .brand{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:var(--paper);display:flex;align-items:center;gap:8px;}
+  .brand .dot{width:8px;height:8px;background:var(--trace);border-radius:50%;box-shadow:0 0 8px var(--trace);}
+  .navlinks{display:flex;gap:32px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);}
+  .navlinks a{position:relative;padding:4px 0;transition:color .2s;}
+  .navlinks a:hover{color:var(--trace);}
+  .navlinks a::before{content:attr(data-idx);color:var(--trace-dim);margin-right:6px;}
+  @media (max-width:720px){.navlinks{display:none;}}
+
+  /* HERO */
+  header.hero{
+    min-height:100vh;
+    display:flex;flex-direction:column;justify-content:center;
+    position:relative;
+    padding-top:64px;
+  }
+  .term{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    max-width:640px;
+    box-shadow:0 40px 80px -30px rgba(0,0,0,0.6);
+    margin-bottom:36px;
+  }
+  .term-bar{
+    display:flex;align-items:center;gap:8px;
+    padding:10px 14px;border-bottom:1px solid var(--line);
+    font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);
+  }
+  .term-bar span.tdot{width:10px;height:10px;border-radius:50%;background:#3A4650;}
+  .term-body{padding:20px 22px;font-family:'JetBrains Mono',monospace;font-size:14px;}
+  .term-body .l{margin-bottom:6px;color:var(--muted);}
+  .term-body .l .prompt{color:var(--trace);}
+  .term-body .out{color:var(--paper);padding-left:18px;margin-bottom:14px;}
+  .caret{display:inline-block;width:8px;height:16px;background:var(--trace);vertical-align:middle;animation:blink 1.1s steps(1) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+
+  h1.hero-title{
+    font-size:clamp(38px,6vw,68px);
+    font-weight:700;
+    line-height:1.05;
+    letter-spacing:-0.02em;
+    margin-bottom:18px;
+  }
+  h1.hero-title .accent{color:var(--trace);}
+  .hero-sub{
+    max-width:560px;color:var(--muted);font-size:17px;margin-bottom:28px;
+  }
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;}
+  .btn{
+    font-family:'JetBrains Mono',monospace;font-size:13px;
+    padding:12px 20px;border-radius:var(--radius);
+    border:1px solid var(--line);
+    transition:all .2s;
+  }
+  .btn.primary{background:var(--trace);color:var(--ink);border-color:var(--trace);font-weight:600;}
+  .btn.primary:hover{background:#26f0bb;}
+  .btn.ghost:hover{border-color:var(--trace);color:var(--trace);}
+
+  /* SECTION shell */
+  section{padding:100px 0;position:relative;border-top:1px solid var(--line);}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;color:var(--trace);font-size:13px;
+    letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before{content:'';width:24px;height:1px;background:var(--trace-dim);}
+  h2.sec-title{font-size:clamp(26px,3.4vw,38px);font-weight:600;margin-bottom:44px;max-width:640px;}
+
+  /* ABOUT */
+  .about-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:56px;align-items:start;}
+  .about-grid p{color:#C6D0D8;margin-bottom:16px;font-size:15.5px;}
+  .stat-block{display:flex;flex-direction:column;gap:22px;}
+  .stat{border-left:2px solid var(--trace-dim);padding-left:16px;}
+  .stat .num{font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;color:var(--paper);}
+  .stat .lbl{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
+  @media (max-width:760px){.about-grid{grid-template-columns:1fr;}}
+
+  /* SKILLS */
+  .skill-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);}
+  .skill-card{background:var(--panel);padding:26px;}
+  .skill-card h3{font-size:14px;font-family:'JetBrains Mono',monospace;color:var(--amber);margin-bottom:16px;letter-spacing:.03em;}
+  .chip-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--paper);
+    border:1px solid var(--line);padding:5px 10px;border-radius:var(--radius);
+    background:var(--panel-2);
+  }
+
+  /* PROJECT */
+  .project-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:36px;position:relative;overflow:hidden;
+  }
+  .project-card::before{
+    content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--trace);
+  }
+  .project-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:18px;}
+  .project-head h3{font-size:22px;}
+  .project-tag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--trace);border:1px solid var(--trace-dim);padding:4px 10px;border-radius:var(--radius);white-space:nowrap;height:fit-content;}
+  .stack-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+  .project-card ul{list-style:none;color:#C6D0D8;font-size:14.5px;}
+  .project-card ul li{padding-left:22px;position:relative;margin-bottom:10px;}
+  .project-card ul li::before{content:'▸';position:absolute;left:0;color:var(--trace);}
+
+  /* TIMELINE (experience/education) */
+  .timeline{position:relative;padding-left:28px;border-left:1px solid var(--line);}
+  .tl-item{position:relative;padding-bottom:40px;}
+  .tl-item:last-child{padding-bottom:0;}
+  .tl-item::before{
+    content:'';position:absolute;left:-33px;top:4px;width:9px;height:9px;
+    background:var(--ink);border:2px solid var(--trace);border-radius:50%;
+  }
+  .tl-item .when{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:4px;}
+  .tl-item h3{font-size:17px;margin-bottom:6px;}
+  .tl-item p{color:#C6D0D8;font-size:14.5px;}
+
+  /* CERTS */
+  .cert-list{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);}
+  .cert-row{background:var(--panel);padding:18px 22px;display:flex;align-items:center;gap:14px;font-size:14.5px;color:#C6D0D8;}
+  .cert-row .mark{color:var(--trace);font-family:'JetBrains Mono',monospace;}
+
+  /* CONTACT */
+  .contact-panel{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:50px 40px;text-align:center;
+  }
+  .contact-panel h2{font-size:clamp(26px,4vw,40px);margin-bottom:14px;}
+  .contact-panel p{color:var(--muted);margin-bottom:30px;}
+  .contact-links{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;}
+
+  footer{
+    padding:28px 0;text-align:center;color:var(--muted);
+    font-family:'JetBrains Mono',monospace;font-size:12px;border-top:1px solid var(--line);
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .caret{animation:none;}
+    html{scroll-behavior:auto;}
+  }
+
+  /* focus visibility */
+  a:focus-visible, .btn:focus-visible{outline:2px solid var(--trace);outline-offset:3px;}
+
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="circuit-bg"></div>
+
+<nav>
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span>K.GANESH</div>
+    <div class="navlinks">
+      <a href="#about" data-idx="01">about</a>
+      <a href="#skills" data-idx="02">skills</a>
+      <a href="#projects" data-idx="03">projects</a>
+      <a href="#experience" data-idx="04">experience</a>
+      <a href="#contact" data-idx="05">contact</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="term">
+      <div class="term-bar"><span class="tdot" style="background:#FF5F57;"></span><span class="tdot" style="background:#FEBC2E;"></span><span class="tdot" style="background:#28C840;"></span><span style="margin-left:6px;">whoami.sh</span></div>
+      <div class="term-body">
+        <div class="l"><span class="prompt">ganesh@devbox</span>:~$ whoami</div>
+        <div class="out">Java Full Stack Developer · ECE Undergrad, CGPA 8.27</div>
+        <div class="l"><span class="prompt">ganesh@devbox</span>:~$ status</div>
+        <div class="out">open to Backend / Full Stack roles<span class="caret"></span></div>
+      </div>
+    </div>
+
+    <h1 class="hero-title">Backend engineer,<br>wired from <span class="accent">first principles.</span></h1>
+    <p class="hero-sub">I'm K. Ganesh — an Electronics &amp; Communication Engineering student who builds scalable backend systems with Spring Boot and Hibernate, and ships the React frontends that sit on top of them. I read signals both ways: through circuits and through APIs.</p>
+    <div class="hero-cta">
+      <a class="btn primary" href="#projects">View projects</a>
+      <a class="btn ghost" href="#contact">Get in touch</a>
+      <a class="btn ghost" href="mailto:ganesh30380@gmail.com">ganesh30380@gmail.com</a>
+    </div>
+  </div>
+</header>
+
+<section id="about">
+  <div class="wrap">
+    <div class="eyebrow">01 / about</div>
+    <h2 class="sec-title">Two disciplines, one way of thinking.</h2>
+    <div class="about-grid">
+      <div class="reveal">
+        <p>I'm currently completing my B.E. in Electronics and Communication Engineering at RMK Engineering College, Anna University, graduating in 2028. Alongside my core coursework in control systems and digital communication, I've built independent depth in Java full stack development — REST APIs, relational data modeling, and the frontend layer that makes those systems usable.</p>
+        <p>That dual background shapes how I work: I treat a backend service the way I'd treat a circuit — trace the signal, know every junction, and never leave a connection unverified. I'm looking for a Backend or Full Stack Developer role where that discipline is useful from day one.</p>
+      </div>
+      <div class="stat-block reveal">
+        <div class="stat"><div class="num">8.27</div><div class="lbl">CGPA · B.E. ECE</div></div>
+        <div class="stat"><div class="num">2028</div><div class="lbl">Expected graduation</div></div>
+        <div class="stat"><div class="num">5+</div><div class="lbl">Core Java/backend technologies</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap">
+    <div class="eyebrow">02 / stack</div>
+    <h2 class="sec-title">The tools I reach for.</h2>
+    <div class="skill-groups">
+      <div class="skill-card">
+        <h3>LANGUAGES</h3>
+        <div class="chip-row">
+          <span class="chip">Java</span><span class="chip">Python</span><span class="chip">C</span><span class="chip">C++</span><span class="chip">JavaScript</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h3>BACKEND</h3>
+        <div class="chip-row">
+          <span class="chip">Spring Boot</span><span class="chip">REST APIs</span><span class="chip">Hibernate/JPA</span><span class="chip">JDBC</span><span class="chip">OOP</span><span class="chip">DSA</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h3>FRONTEND</h3>
+        <div class="chip-row">
+          <span class="chip">React</span><span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JavaScript</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h3>DATABASES</h3>
+        <div class="chip-row">
+          <span class="chip">PostgreSQL</span><span class="chip">MySQL</span><span class="chip">H2</span><span class="chip">SQL</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h3>TOOLS</h3>
+        <div class="chip-row">
+          <span class="chip">Git</span><span class="chip">GitHub</span><span class="chip">IntelliJ IDEA</span><span class="chip">VS Code</span><span class="chip">Postman</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap">
+    <div class="eyebrow">03 / projects</div>
+    <h2 class="sec-title">What I've built.</h2>
+    <div class="project-card">
+      <div class="project-head">
+        <h3>Student Management System</h3>
+        <span class="project-tag">Java Full Stack</span>
+      </div>
+      <div class="stack-row">
+        <span class="chip">Spring Boot</span><span class="chip">Spring Data JPA</span><span class="chip">Hibernate</span><span class="chip">PostgreSQL</span><span class="chip">React</span><span class="chip">JWT</span><span class="chip">Postman</span>
+      </div>
+      <ul>
+        <li>Built a full-stack Student Management System with complete CRUD functionality using Spring Boot on the backend and React on the frontend.</li>
+        <li>Implemented JWT-based authentication with role-based authorization to secure REST endpoints.</li>
+        <li>Integrated PostgreSQL via Spring Data JPA and Hibernate, and validated all API behavior using Postman.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="wrap">
+    <div class="eyebrow">04 / experience</div>
+    <h2 class="sec-title">Internships &amp; hands-on exposure.</h2>
+    <div class="timeline">
+      <div class="tl-item reveal">
+        <div class="when">1 week</div>
+        <h3>BSNL — Data Networks Division</h3>
+        <p>Gained hands-on exposure to enterprise data network infrastructure, telecommunication protocols, and network management practices in a live production environment.</p>
+      </div>
+      <div class="tl-item reveal">
+        <div class="when">2 weeks</div>
+        <h3>8 Queens — Mobile Application Development</h3>
+        <p>Participated in the mobile application development lifecycle, contributing to UI design, feature testing, and integration of application components.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="education">
+  <div class="wrap">
+    <div class="eyebrow">05 / education</div>
+    <h2 class="sec-title">Academic background.</h2>
+    <div class="timeline">
+      <div class="tl-item reveal">
+        <div class="when">2024 — 2028</div>
+        <h3>RMK Engineering College, Anna University</h3>
+        <p>B.E. — Electronics and Communication Engineering (ECE) · CGPA: 8.27<br>Relevant coursework: Data Structures &amp; Algorithms, OOP, DBMS, Operating Systems, Computer Networks, Control Systems, Digital &amp; Analog Communication, Microprocessors &amp; Microcontrollers, Digital VLSI Design.</p>
+      </div>
+      <div class="tl-item reveal">
+        <div class="when">Class XII / X</div>
+        <h3>Dharam Hinduja Matriculation Higher Secondary School</h3>
+        <p>Class XII: 89.16% · Class X: 81.5%</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="certifications">
+  <div class="wrap">
+    <div class="eyebrow">06 / certifications</div>
+    <h2 class="sec-title">Verified learning.</h2>
+    <div class="cert-list">
+      <div class="cert-row"><span class="mark">✓</span> Infosys Springboard — Data Structures and Algorithms using Java</div>
+      <div class="cert-row"><span class="mark">✓</span> Infosys Springboard — HTML &amp; CSS Fundamentals</div>
+      <div class="cert-row"><span class="mark">✓</span> Infosys Springboard — Additional Programming and Technology Certifications</div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="contact-panel">
+      <div class="eyebrow" style="justify-content:center;">07 / contact</div>
+      <h2>Let's build something reliable.</h2>
+      <p>Open to Java Backend and Full Stack Developer opportunities.</p>
+      <div class="contact-links">
+        <a class="btn primary" href="mailto:ganesh30380@gmail.com">ganesh30380@gmail.com</a>
+        <a class="btn ghost" href="tel:9342630380">9342630380</a>
+        <a class="btn ghost" href="#">LinkedIn</a>
+        <a class="btn ghost" href="#">GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">K. GANESH — Java Full Stack Developer · built with HTML/CSS</div>
+</footer>
+
+<script>
+  const els = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  },{threshold:0.15});
+  els.forEach(el=>io.observe(el));
+</script>
+
+</body>
+</html>
